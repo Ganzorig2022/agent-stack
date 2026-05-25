@@ -1,5 +1,14 @@
-cat > claude/CLAUDE.md <<'EOF'
 # Global Claude Code Instructions
+
+@~/.claude/rules/common/agents.md
+@~/.claude/rules/common/coding-review.md
+@~/.claude/rules/common/coding-style.md
+@~/.claude/rules/common/development-workflow.md
+@~/.claude/rules/common/git-workflow.md
+@~/.claude/rules/common/hooks.md
+@~/.claude/rules/common/security.md
+@~/.claude/rules/common/performance.md
+@~/.claude/rules/common/testing.md
 
 ## Operating Model
 
@@ -49,4 +58,4 @@ When creating a handoff plan for another agent:
 - Do not run destructive commands.
 - Prefer minimal, reversible changes.
 - Preserve existing project conventions unless the user asks to change them.
-EOF
+  EOF
