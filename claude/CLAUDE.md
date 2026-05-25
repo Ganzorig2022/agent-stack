@@ -5,9 +5,9 @@
 @~/.claude/rules/common/coding-style.md
 @~/.claude/rules/common/development-workflow.md
 @~/.claude/rules/common/git-workflow.md
-@~/.claude/rules/common/hooks.md
 @~/.claude/rules/common/security.md
 @~/.claude/rules/common/performance.md
+@~/.claude/rules/common/patterns.md
 @~/.claude/rules/common/testing.md
 
 ## Operating Model

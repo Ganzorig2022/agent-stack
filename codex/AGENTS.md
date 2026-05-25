@@ -1,4 +1,3 @@
-cat > codex/AGENTS.md <<'EOF'
 # Global Codex Instructions
 
 ## Operating Model
@@ -46,4 +45,3 @@ Summarize:
 - checks not run and why
 - remaining risks
 - suggested reviewer focus
-EOF
