@@ -10,6 +10,13 @@
 @~/.claude/rules/common/patterns.md
 @~/.claude/rules/common/testing.md
 
+## Claude commands
+
+Installed into:
+
+```bash
+~/.claude/commands/
+
 ## Operating Model
 
 Use a planner/executor/reviewer workflow for complex work.
@@ -59,3 +66,4 @@ When creating a handoff plan for another agent:
 - Prefer minimal, reversible changes.
 - Preserve existing project conventions unless the user asks to change them.
   EOF
+```
