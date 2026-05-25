@@ -5,7 +5,7 @@ Portable AI-agent configuration for my local development environment.
 `agent-stack` is a small, opinionated dotfiles-style repo for keeping AI coding agent instructions, rules, skills, and installer scripts in one place. It currently targets:
 
 - Claude Code via `~/.claude`
-- Codex via `~/.codex/AGENTS.md`
+- Codex via `~/.codex`
 
 The goal is not to build a giant agent framework. The goal is to keep a clean, reusable operating layer for AI-assisted software work.
 
@@ -24,6 +24,10 @@ agent-stack/
 
   codex/
     AGENTS.md
+    skills/
+    rules/      # optional, future-friendly
+    commands/   # optional, future-friendly
+    agents/     # optional, future-friendly
 
   scripts/
     check.sh
@@ -52,12 +56,18 @@ Installed into:
 
 ## codex/
 
-Codex global instructions.
+Codex configuration.
+
+Includes:
+
+- global Codex instructions
+- reusable local skills
+- room for future Codex-specific rules, commands, and agent prompts without changing the installer layout
 
 Installed into:
 
 ```text
-~/.codex/AGENTS.md
+~/.codex/
 ```
 
 # Bootstrap from a new device
@@ -79,4 +89,5 @@ ls -1 ~/.claude/agents
 
 ```bash
 cat ~/.codex/AGENTS.md
+find ~/.codex -maxdepth 3 -type f | sort
 ```

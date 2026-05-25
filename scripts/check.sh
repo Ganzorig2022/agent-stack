@@ -12,6 +12,23 @@ ok() {
   echo "OK: $1"
 }
 
+check_skill_layout() {
+  local root="$1"
+  local label="$2"
+
+  if [ -d "$root" ]; then
+    while IFS= read -r -d '' skill_dir; do
+      [ -f "$skill_dir/SKILL.md" ] || fail "skill directory missing SKILL.md: ${skill_dir#$ROOT/}"
+    done < <(find "$root" -mindepth 1 -maxdepth 1 -type d -print0)
+
+    local flat_skill_count
+    flat_skill_count="$(find "$root" -maxdepth 1 -type f -name "*.md" | wc -l | tr -d ' ')"
+    [ "$flat_skill_count" = "0" ] || fail "flat .md files found in ${root#$ROOT/}; use skill-name/SKILL.md"
+  fi
+
+  ok "$label skills layout"
+}
+
 [ -d "$ROOT/claude" ] || fail "missing claude/"
 [ -f "$ROOT/claude/CLAUDE.md" ] || fail "missing claude/CLAUDE.md"
 [ -d "$ROOT/claude/agents" ] || fail "missing claude/agents/"
@@ -47,14 +64,11 @@ done
 ok "Claude agents"
 
 if [ -d "$ROOT/claude/skills" ]; then
-  while IFS= read -r -d '' skill_dir; do
-    [ -f "$skill_dir/SKILL.md" ] || fail "skill directory missing SKILL.md: ${skill_dir#$ROOT/}"
-  done < <(find "$ROOT/claude/skills" -mindepth 1 -maxdepth 1 -type d -print0)
-
-  flat_skill_count="$(find "$ROOT/claude/skills" -maxdepth 1 -type f -name "*.md" | wc -l | tr -d ' ')"
-  [ "$flat_skill_count" = "0" ] || fail "flat .md files found in claude/skills; use skill-name/SKILL.md"
+  check_skill_layout "$ROOT/claude/skills" "Claude"
+else
+  ok "Claude skills layout"
 fi
 
-ok "Claude skills layout"
+check_skill_layout "$ROOT/codex/skills" "Codex"
 
 echo "Check complete."

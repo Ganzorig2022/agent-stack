@@ -155,6 +155,21 @@ install_codex() {
 
   copy_file "$source/AGENTS.md" "$target/AGENTS.md"
 
+  while IFS= read -r -d '' path; do
+    local name
+    name="$(basename "$path")"
+
+    if [ "$name" = "AGENTS.md" ]; then
+      continue
+    fi
+
+    if [ -d "$path" ]; then
+      copy_dir_contents "$path" "$target/$name"
+    elif [ -f "$path" ]; then
+      copy_file "$path" "$target/$name"
+    fi
+  done < <(find "$source" -mindepth 1 -maxdepth 1 -print0)
+
   echo "Codex install complete."
 }
 

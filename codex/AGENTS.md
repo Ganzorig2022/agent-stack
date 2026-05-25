@@ -1,5 +1,27 @@
 # Global Codex Instructions
 
+## Local Codex Stack
+
+Treat `~/.codex` as a portable config tree, not just a single `AGENTS.md`.
+
+When local repo-managed content exists under `~/.codex`, use it as the first customization layer before falling back to global defaults:
+
+- `~/.codex/skills/` for reusable workflow skills
+- `~/.codex/rules/` for concise rule documents
+- `~/.codex/commands/` for promptable command templates, if supported by the client
+- `~/.codex/agents/` for agent-specific handoff or review prompts, if supported by the client
+
+Prefer repository-managed Codex content when it is directly relevant to the task.
+
+If multiple local content types exist, use the narrowest one that fits:
+
+1. skill for a workflow
+2. rule for a compact constraint layer
+3. command for a repeatable prompt template
+4. agent prompt for planner/reviewer/handoff specialization
+
+Do not assume the Codex stack is limited to the current set of folders. New local content may be added over time.
+
 ## Operating Model
 
 Use a planner / executor / reviewer workflow for non-trivial work.
