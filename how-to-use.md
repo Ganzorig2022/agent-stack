@@ -60,8 +60,10 @@ Skills don't self-trigger in Codex. In Claude, they self-trigger when the SKILL.
 | `backend-patterns`    | Writing Express/Fastify routes, middleware, API design | auto-triggers on Node.js backend work              |
 | `nextjs-turbopack`    | Next.js 15-16 bundling, Turbopack config, slow builds  | auto-triggers on Next.js config/performance        |
 | `docker-patterns`     | Writing Dockerfiles, Compose files, deploy pipeline    | auto-triggers when touching Docker files           |
+| `frontend-patterns`   | React/Next.js component patterns, state, performance   | auto-triggers on React/Next.js frontend work       |
 | `github-ops`          | PR triage, CI status, release cuts, stale issues       | `"use github-ops to triage open PRs"`              |
 | `mcp-server-patterns` | Building a custom MCP server (like Figma MCP)          | `"use mcp-server-patterns and build a tool for X"` |
+| `vault-csi`           | Kubernetes secrets via Vault CSI Driver (k8s deploys)  | `"use vault-csi to wire secrets for this service"` |
 | `codebase-onboarding` | First session in an unfamiliar repo                    | `"use codebase-onboarding on this repo"`           |
 
 ### Agent / Token Efficiency
@@ -306,11 +308,13 @@ Starting a task?
 │
 ├── Node.js/Express/Fastify API → backend-patterns active
 │
-├── Next.js frontend → nextjs-turbopack + frontend-design-direction
+├── Next.js frontend → nextjs-turbopack + frontend-design-direction + frontend-patterns
 │
 ├── Animation/motion work → motion-patterns
 │
 ├── Docker/deploy → docker-patterns
+│
+├── Kubernetes secrets (Vault CSI) → vault-csi
 │
 ├── Building MCP tool → mcp-server-patterns
 │
