@@ -1,357 +1,80 @@
 # Development Workflow
 
-This rule defines the default feature-development pipeline before final git operations.
-
-Use this workflow for non-trivial features, refactors, migrations, architecture changes, security-sensitive work, and unfamiliar codebases.
-
-Do not apply the full workflow mechanically to tiny edits, typo fixes, formatting-only changes, or obvious one-file fixes.
+Use for non-trivial features, refactors, migrations, architecture changes, security-sensitive work, unfamiliar codebases.
+Skip for typo fixes, formatting-only changes, obvious one-file fixes.
 
 ## Core Workflow
 
-1. Research and reuse when needed.
+1. Research and reuse when needed
+2. Plan before implementation
+3. Prefer TDD for testable behavior
+4. Review after meaningful code changes
+5. Run validation checks
+6. Summarize clearly
+7. Commit only when explicitly asked
 
-2. Plan before implementation.
+## Research Priority
 
-3. Prefer test-aware or TDD development.
+1. **Local repo first** — search existing patterns, similar modules, tests, routes, components, utilities. Prefer local consistency over external examples.
+2. **Primary docs** — official/vendor docs for API behavior, version-specific details, supported patterns. Prefer primary sources over blog posts.
+3. **Package registries** — check npm/PyPI/crates.io before writing reusable infrastructure. Prefer established libraries for generic/security-sensitive problems. Avoid deps for trivial utilities.
+4. **Code search** — use only when examples/patterns would meaningfully reduce risk. Do not copy without license review.
+5. **Web research** — last resort when above sources are insufficient.
 
-4. Review after meaningful code changes.
+Research mandatory for: unfamiliar APIs, new dependencies, security-sensitive behavior, architecture decisions, external integrations, unclear requirements.
+Research optional for: small local fixes, simple refactors, project-specific glue code, obvious changes using existing patterns.
 
-5. Run validation checks.
+## Plan First
 
-6. Summarize clearly.
+Use the `planner` agent or `/plan` for: complex features, architecture changes, cross-file refactors, migrations, security-sensitive changes, unfamiliar codebases, handoffs to another agent/session.
 
-7. Commit only when explicitly asked.
-
-## 0. Research and Reuse
-
-Research is mandatory when work involves:
-
-- unfamiliar APIs or libraries
-
-- new dependencies
-
-- security-sensitive behavior
-
-- architecture decisions
-
-- external integrations
-
-- unclear requirements
-
-- implementing something likely to have established patterns
-
-Research is optional for:
-
-- small local fixes
-
-- simple refactors
-
-- project-specific glue code
-
-- obvious changes using existing local patterns
-
-Research priority:
-
-1. **Local repository first**
-
-   - Search the current codebase for existing patterns.
-
-   - Prefer consistency with local conventions over external examples.
-
-   - Inspect similar modules, tests, routes, components, and utilities.
-
-2. **Primary documentation second**
-
-   - Use official/vendor docs for API behavior, version-specific details, and supported patterns.
-
-   - Prefer primary sources over blog posts.
-
-3. **Package registries when dependency choice matters**
-
-   - Check npm, PyPI, crates.io, Go packages, or other relevant registries before writing reusable infrastructure.
-
-   - Prefer established libraries when the problem is generic and security-sensitive.
-
-   - Avoid adding dependencies for trivial utilities.
-
-4. **GitHub/code search when useful and available**
-
-   - Use GitHub search only when examples or implementation patterns would reduce risk.
-
-   - Do not use external code blindly.
-
-   - Respect licenses and avoid copying incompatible code.
-
-5. **Broader web research last**
-
-   - Use broader web research only when local code, primary docs, and package registries are insufficient.
-
-Do not block progress if external research tools are unavailable. State the limitation and proceed from local context where reasonable.
-
-## 1. Plan First
-
-Use the planner agent for:
-
-- complex features
-
-- architecture changes
-
-- cross-file refactors
-
-- migrations
-
-- security-sensitive changes
-
-- unfamiliar codebases
-
-- work that will be handed to another agent/session
-
-A useful plan includes:
-
-- requirements
-
-- assumptions
-
-- non-goals
-
-- affected files/modules
-
-- files to inspect first
-
-- likely files to modify
-
-- implementation phases
-
-- dependencies
-
-- risks and mitigations
-
-- validation commands
-
-- testing strategy
-
-- handoff prompt when another agent/session will execute
+A useful plan includes: requirements, assumptions, non-goals, affected files/modules, files to inspect first, likely files to modify, implementation phases, dependencies, risks and mitigations, validation commands, testing strategy, handoff prompt when relevant.
 
 Planning should be proportional. Do not create heavyweight PRDs for simple fixes.
 
-## 2. Test-Aware Development / TDD
+## TDD
 
-Prefer TDD when the behavior is clear and testable.
+Use `tdd-guide` agent for: new business logic, bugs with reproducible failures, validation rules, API behavior changes, refactoring behavior that must be preserved.
 
-Use the tdd-guide agent when:
+Loop: RED (failing test) → GREEN (minimal implementation) → IMPROVE (refactor) → VERIFY (run checks).
 
-- implementing new business logic
+Skip TDD for: exploring unknown codebase, mechanical docs work, tiny config changes, test setup that doesn't exist and adding it would be larger than the change.
 
-- fixing a bug with a reproducible failure
+## Implementation Discipline
 
-- adding validation rules
+- Make minimal, focused changes
+- Follow existing project conventions
+- Preserve stated non-goals; avoid unrelated cleanup
+- Avoid broad rewrites unless explicitly justified
+- Keep changes reversible
+- If plan conflicts with repo reality, update the plan
 
-- changing API behavior
+## Security Review → use `security-reviewer`
 
-- refactoring behavior that must be preserved
+Trigger on: auth, authz, user input, API endpoints, DB queries, file uploads/downloads, payments, webhooks, external URLs, secrets, sensitive data, dependency updates.
+Findings must be evidence-based and include concrete impact.
 
-TDD loop:
+## Code Review → use `code-reviewer`
 
-1. RED: write or identify failing test.
+After meaningful code changes. Focus: correctness, regressions, security risks, missing tests, maintainability, unnecessary complexity, convention violations.
 
-2. GREEN: implement the smallest change that passes.
+Address CRITICAL/HIGH before merge. MEDIUM when practical. LOW only when clear value.
 
-3. IMPROVE: refactor without changing behavior.
+## Validation Before Done
 
-4. VERIFY: run relevant tests/checks.
+Run the most relevant available checks. Prefer existing package scripts and the project's package manager. Report what ran and what didn't. Never claim a check passed unless actually run.
 
-Do not force TDD when:
+Relevant checks: tests, typecheck, lint, build, dependency audit for security-sensitive work. E2E tests only for critical browser journeys or when explicitly requested.
 
-- exploring an unknown codebase
+## Documentation → use `doc-updater`
 
-- doing mechanical docs work
-
-- making tiny config changes
-
-- test setup does not exist and adding it would be larger than the change
-
-Coverage targets are project-specific. Do not invent an 80% requirement unless the project already has that policy.
-
-## 3. Implementation Discipline
-
-During implementation:
-
-- make minimal, focused changes
-
-- follow existing project conventions
-
-- preserve stated non-goals
-
-- avoid unrelated cleanup
-
-- avoid broad rewrites unless explicitly justified
-
-- keep changes reversible
-
-- validate assumptions against existing code
-
-If a plan conflicts with repository reality, update the plan instead of forcing the implementation.
-
-## 4. Code Review
-
-Use the code-reviewer agent after meaningful code changes.
-
-Review focus:
-
-- correctness
-
-- regressions
-
-- security risks
-
-- missing tests
-
-- maintainability
-
-- unnecessary complexity
-
-- project convention violations
-
-Address:
-
-- CRITICAL issues before merge
-
-- HIGH issues before merge unless explicitly accepted
-
-- MEDIUM issues when practical
-
-- LOW/nit issues only when they provide clear value
-
-Do not manufacture findings to appear rigorous.
-
-## 5. Security Review
-
-Use the security-reviewer agent when changes involve:
-
-- authentication
-
-- authorization
-
-- user input
-
-- API endpoints
-
-- database queries
-
-- file uploads/downloads
-
-- payments
-
-- webhooks
-
-- external URLs
-
-- secrets
-
-- sensitive data
-
-- dependency updates
-
-Security findings must be evidence-based and include concrete impact.
-
-## 6. Validation Checks
-
-Before marking work complete:
-
-- run the most relevant available checks
-
-- prefer existing package scripts
-
-- use the project’s package manager
-
-- report commands run and results
-
-- report commands not run and why
-
-Examples of relevant checks:
-
-- tests
-
-- typecheck
-
-- lint
-
-- build
-
-- dependency audit for security-sensitive work
-
-- E2E tests only for critical browser journeys or when explicitly requested
-
-Never claim a check passed unless it was actually run.
-
-## 7. Documentation
-
-Use the doc-updater agent when implementation changes affect:
-
-- README setup or usage
-
-- API behavior
-
-- CLI behavior
-
-- configuration
-
-- environment variables
-
-- migration steps
-
-- examples
-
-- changelog/release notes
-
-Do not update docs for invisible internal changes unless documentation would prevent future mistakes.
-
-## 8. Commit and Push
-
-Do not commit or push unless the user explicitly asks.
-
-When asked to commit:
-
-- inspect `git status`
-
-- inspect staged and unstaged changes
-
-- keep commits focused
-
-- use conventional commits when appropriate
-
-- include meaningful commit messages
-
-- do not include secrets or unrelated changes
-
-For commit message and PR process, follow `git-workflow.md`.
-
-## 9. Pre-Review Checks
-
-Before saying work is ready for review:
-
-- relevant tests/checks have passed or failures are explained
-
-- merge conflicts are resolved or called out
-
-- branch status is understood when relevant
-
-- critical/high review findings are addressed or explicitly accepted
-
-- docs are updated if behavior or usage changed
+When changes affect: README, API behavior, CLI behavior, configuration, environment variables, migration steps, examples, changelog.
+Skip for invisible internal changes unless docs would prevent future mistakes.
 
 ## Done Criteria
 
-Work is done only when:
-
-- requested scope is satisfied
-
-- unrelated changes are avoided
-
-- meaningful edge cases are handled
-
-- relevant validation was run or limitations are stated
-
-- review findings are addressed based on severity
-
-- final summary includes changed files, validation, and remaining risks
+- Requested scope satisfied; unrelated changes avoided
+- Meaningful edge cases handled
+- Relevant validation run or limitations stated
+- Review findings addressed based on severity
+- Final summary: changed files, validation results, remaining risks
