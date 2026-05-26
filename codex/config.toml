@@ -15,20 +15,7 @@ goals = true
 terminal_resize_reflow = true
 js_repl = false
 
-
-[projects."/Users/dev/QPay/qpay-ticket-web-v2"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/qpay-ticket-service-v2"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/sms-merchant-web-nextjs"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/sms-merchant-service"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/qpay-sales-mobile"]
+[projects."/Users/dev"]
 trust_level = "trusted"
 
 [projects."/Users/dev/QPay/live-market-landing"]
@@ -36,108 +23,6 @@ trust_level = "untrusted"
 
 [projects."/Users/dev/QPay/market-admin"]
 trust_level = "untrusted"
-
-[projects."/Users/dev/QPay/landing"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/qpay-merchant-logics-service"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/qpay-umps-service"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/qpay-qr-crud-service"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/qpay-tax-tdb-service"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/qpay-tax-service"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/qpay-merchant-in-service"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/qpay-fi-admin-service"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/qp2p-wallet-in-service"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/EASY_INVOICE/sms-merchant-web-nextjs"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/qpay-docs-web"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/new-api-docs-platform"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/qpay-docs"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/qpay-bankapp-in-service"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/qpay-complain-service"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/qpay-micro-services"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/qpay-auth-service"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/qpay-merchant-web-service"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/qpay-report-export-service"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/qpay-complain-admin"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/qpay-thirdparty-service"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/knowledge-base"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/qpay-wallet-mobile"]
-trust_level = "trusted"
-
-[projects."/Users/dev/Documents/TAZ"]
-trust_level = "trusted"
-
-[projects."/Users/dev/Documents/TAZ/taz-exam-general-system"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/qpay-deps-web"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/qpay-merchant-sso-service"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/TICKET_SYSTEM"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/TICKET_SYSTEM/qpay-ticket-web-v2"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/qpay-qpaymn-web"]
-trust_level = "trusted"
-
-[projects."/Users/dev/QPay/qpay-qpos-backend"]
-trust_level = "trusted"
-
-[projects."/Users/dev/agent-stack"]
-trust_level = "trusted"
-
-[projects."/Users/dev"]
-trust_level = "trusted"
 
 [notice]
 fast_default_opt_out = true
@@ -155,38 +40,6 @@ status_line_use_colors = true
 
 [tui.model_availability_nux]
 "gpt-5.5" = 4
-
-[[skills.config]]
-path = "/Users/dev/QPay/qpay-docs-web/.agents/skills/shadcn/SKILL.md"
-enabled = false
-
-[[skills.config]]
-path = "/Users/dev/QPay/sms-merchant-service/.codex/skills/sms-feature-implementer/SKILL.md"
-enabled = false
-
-[[skills.config]]
-path = "/Users/dev/.codex/plugins/cache/openai-curated/github/b4940fd0a222022ecd7852e20a4c89ed36b9e9de/skills/gh-address-comments/SKILL.md"
-enabled = false
-
-[[skills.config]]
-path = "/Users/dev/.codex/plugins/cache/openai-curated/github/b4940fd0a222022ecd7852e20a4c89ed36b9e9de/skills/gh-fix-ci/SKILL.md"
-enabled = false
-
-[[skills.config]]
-path = "/Users/dev/.codex/skills/.system/imagegen/SKILL.md"
-enabled = false
-
-[[skills.config]]
-path = "/Users/dev/.codex/plugins/cache/openai-curated/github/9d07fd08/skills/gh-fix-ci/SKILL.md"
-enabled = false
-
-[[skills.config]]
-path = "/Users/dev/.codex/plugins/cache/openai-curated/github/9d07fd08/skills/yeet/SKILL.md"
-enabled = false
-
-[[skills.config]]
-path = "/Users/dev/.codex/plugins/cache/openai-primary-runtime/presentations/26.426.12240/skills/presentations/SKILL.md"
-enabled = false
 
 [plugins."github@openai-curated"]
 enabled = true
