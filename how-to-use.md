@@ -28,15 +28,52 @@ codex doctor                  # check local setup health
 
 ## Mental Model
 
+There are four primitives. The one question that separates all of them:
+
+> **Whose context window does the work run in?**
+
+| Primitive   | Runs in                 | What it actually is                                      | You get it by                                             |
+| ----------- | ----------------------- | -------------------------------------------------------- | --------------------------------------------------------- |
+| **Rule**    | your context, always    | text `@`-imported into `CLAUDE.md` — ambient constraints | nothing — it's always on                                  |
+| **Command** | your context, on demand | a saved prompt template that expands inline              | typing `/plan ...`                                        |
+| **Skill**   | your context, on demand | packaged expertise/procedure, loaded only when relevant  | auto-trigger from its `description`, or "use the X skill" |
+| **Agent**   | _its own_ context       | a separate Claude instance with its own tools + prompt   | `claude --agent X`, or Claude delegates to it             |
+
+Rules, commands, and skills all run **in the session you're looking at** — you see every
+step and can steer it. An **agent runs on a clean desk in another room**: it burns its own
+context window, can have a restricted toolset, and hands back only its conclusion.
+
 ```
-Skills      = passive knowledge layer (always loaded, activated by context or explicit invocation)
-Agents      = specialized sub-agents Claude can spawn (planner, architect, tdd-guide, etc.)
-Commands    = slash commands you invoke explicitly (/plan, /refactor-clean)
-Rules       = always-on behavioral constraints (coding style, git workflow, etc.)
+inline (rule / command / skill)  = transparent + cheap + steerable
+agent                            = isolated + parallel + protects your main context
+```
+
+### The overlap that trips people up
+
+Some jobs exist as **both** a command and an agent. That is intentional — they differ in
+context economics, not in purpose:
+
+| Inline (you watch it)                                                  | Agent (isolated, returns a result)                                                           |
+| ---------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `/plan` — plans in your session, no subagents (see `commands/plan.md`) | `planner` agent — read-only tools, reads many files in its own window, returns just the plan |
+| `/refactor-clean` — deletes inline, you see each step                  | `refactor-cleaner` agent — bulk cleanup off to the side, returns a summary                   |
+
+Reach for the **agent** when the work is big or noisy enough that you don't want to _read_
+all of it in your main thread, or when you want it running in parallel.
+
+### Decision rule
+
+```
+Always-true constraint?                        → Rule (you don't pick it; it's just on)
+Want a repeatable prompt I type myself?        → Command
+Need domain knowledge/procedure loaded inline,
+  working where I can steer?                   → Skill
+Want heavy/parallel/specialized work that
+  returns a result without flooding me?        → Agent
 ```
 
 Skills don't self-trigger in Codex. In Claude, they self-trigger when the SKILL.md's
-"When to Activate" conditions match — or you invoke them explicitly.
+description matches the work — or you invoke them explicitly.
 
 **Explicit invocation pattern:**
 
@@ -48,6 +85,64 @@ Skills don't self-trigger in Codex. In Claude, they self-trigger when the SKILL.
 # Codex
 "using the docker-patterns skill, ..."
 ```
+
+---
+
+## By Task Type — Who Does What
+
+The primitives **compose**. Below is the layering per task shape — which primitive plays
+which role. (Concrete CLI transcripts live in [Chain-Reaction Workflows](#chain-reaction-workflows) below.)
+
+### Grounding on a new repo
+
+You have no context yet, and the repo may be large — so push the heavy reading into an
+isolated window.
+
+```
+Rules                ← style / git / security already enforced in the background
+codebase-onboarding  ← skill: drives the map (entry points, conventions, module boundaries)
+  └ Explore / agent  ← isolated heavy file-reading so it doesn't flood your main context
+artifact             ← architecture map + a starter CLAUDE.md you keep
+```
+
+Why an agent here: a fresh repo means dozens of file reads. Done inline, that noise fills
+your window before you've written a line. Isolated, you get back only the map.
+
+### Implementing a new feature on an existing repo
+
+The common case. All four primitives show up in one task.
+
+```
+Rules                          ← always enforcing style/security/git underneath
+/plan <feature>                ← command: your typed entry point; plans inline so you can steer
+  [you approve the plan]
+implement                      ← inline; backend-patterns / frontend-patterns skills
+                                 auto-load as you touch matching files
+  └ code-reviewer (agent)      ← isolated review pass before commit, findings by severity
+  └ security-reviewer (agent)  ← only if auth / secrets / APIs / webhooks are touched
+verification-loop              ← skill: confirm it actually runs before you call it done
+```
+
+Inline `/plan` (not the `planner` agent) because on a repo you know, you want to _see and
+steer_ the plan. The reviewers are agents because a clean review pass shouldn't compete with
+your implementation context.
+
+### Planning then executing (split across agents/sessions)
+
+When the plan is big, or you want one agent to plan and another to execute (e.g. Claude
+plans, Codex executes), isolate the planning.
+
+```
+planner agent  → produces the plan in its own window (read-only tools, can't edit)
+  or /plan     → if you'd rather watch it form and adjust as it goes
+handoff skill  → compact the plan + constraints into an agent-neutral document
+execute        → same session, or hand the document to Codex / a fresh session
+  └ rules travel automatically; skills re-trigger from the new session's file context
+```
+
+Rule of thumb: **inline when you want to steer, isolated when you want a result.** Planning
+on a familiar feature → inline. Planning that requires reading half the codebase, or that
+you'll hand to another agent → `planner` agent + `handoff`.
 
 ---
 
