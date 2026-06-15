@@ -63,9 +63,9 @@ The Codex side is intentionally extensible. If you later add `codex/rules/`, `co
 | Type              | Current items                                                                                                                                      |
 | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Global entrypoint | `CLAUDE.md`                                                                                                                                        |
-| Agents            | `architect`, `build-error-resolver`, `code-reviewer`, `doc-updater`, `e2e-runner`, `planner`, `refactor-cleaner`, `security-reviewer`, `tdd-guide` |
+| Agents            | `architect`, `build-error-resolver`, `code-reviewer`, `doc-updater`, `e2e-runner`, `planner`, `react-reviewer`, `refactor-cleaner`, `security-reviewer`, `tdd-guide`, `typescript-reviewer` |
 | Commands          | `plan`, `refactor-clean`                                                                                                                           |
-| Skills            | `coding-standard`, `frontend-patterns`, `vault-csi`                                                                                                |
+| Skills            | 23 skills — daily stack (`backend-patterns`, `frontend-patterns`, `nextjs-turbopack`, `docker-patterns`, `payment-service-patterns`, …), agent/token efficiency, research/design, and Flutter. Full list in [how-to-use.md](how-to-use.md#installed-skills--when-to-use-each). |
 | Rules             | common workflow, review, security, testing, git, style, patterns, performance guidance                                                             |
 
 ### Codex
@@ -117,9 +117,20 @@ bash scripts/install.sh --target all --backup
 | `--skip`          | Keep existing files and skip conflicts     |
 | `--backup`        | Move existing files aside before overwrite |
 | `--force`         | Overwrite existing files directly          |
+| `--prune`         | Remove live agents/rules/commands not in the repo (skills left intact) |
 | `--dry-run`       | Print actions without changing files       |
 
-Recommended default: `--backup`.
+Recommended default: `--backup`. For a clean re-sync that also removes items you
+renamed or deleted in the repo (e.g. old flat rules left behind by a layout change),
+add `--prune`:
+
+```bash
+bash scripts/install.sh --target claude --backup --prune
+```
+
+Backups are written to a single `~/.claude/.backups/<timestamp>/` tree (mirrored paths),
+not scattered as `*.backup.<timestamp>` files next to the originals. `--prune` never
+touches `skills/`, since that directory also holds skills installed from other sources.
 
 ## Verify The Install
 

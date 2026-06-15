@@ -118,7 +118,9 @@ Rules                          ← always enforcing style/security/git underneat
   [you approve the plan]
 implement                      ← inline; backend-patterns / frontend-patterns skills
                                  auto-load as you touch matching files
-  └ code-reviewer (agent)      ← isolated review pass before commit, findings by severity
+  └ typescript-reviewer (agent)← JS/TS specialist: async correctness, NoSQL injection, Node security
+  └ react-reviewer (agent)     ← on .tsx/.jsx: hook rules, RSC server/client boundary, Server Action auth
+  └ code-reviewer (agent)      ← isolated general review pass before commit, findings by severity
   └ security-reviewer (agent)  ← only if auth / secrets / APIs / webhooks are touched
 verification-loop              ← skill: confirm it actually runs before you call it done
 ```
@@ -153,6 +155,7 @@ you'll hand to another agent → `planner` agent + `handoff`.
 | Skill                 | Trigger                                                | How to invoke                                      |
 | --------------------- | ------------------------------------------------------ | -------------------------------------------------- |
 | `backend-patterns`    | Writing Express/Fastify routes, middleware, API design | auto-triggers on Node.js backend work              |
+| `payment-service-patterns` | Wallet / transaction / settlement / webhook code — money handling, idempotency, transaction consistency (Mongoose + Sequelize) | auto-triggers on payment-service work (qpay/qcard/qp2p) |
 | `nextjs-turbopack`    | Next.js 15-16 bundling, Turbopack config, slow builds  | auto-triggers on Next.js config/performance        |
 | `docker-patterns`     | Writing Dockerfiles, Compose files, deploy pipeline    | auto-triggers when touching Docker files           |
 | `frontend-patterns`   | React/Next.js component patterns, state, performance   | auto-triggers on React/Next.js frontend work       |
@@ -341,6 +344,8 @@ claude -r
 claude --agent architect
 claude --agent planner
 claude --agent tdd-guide
+claude --agent typescript-reviewer   # JS/TS review (async, NoSQL injection, Node security) in its own context
+claude --agent react-reviewer        # React/Next.js review (hooks, RSC boundary, Server Action auth)
 
 # Run a slash command immediately on start
 claude "/plan add rate limiting to all API routes"
@@ -381,7 +386,7 @@ cp claude/skills/my-skill/SKILL.md codex/skills/my-skill/SKILL.md
 # 3. Validate
 bash scripts/check.sh
 
-# 4. Install
+# 4. Install (add --prune to also remove items you renamed/deleted in the repo)
 bash scripts/install.sh --target all --backup
 ```
 
@@ -403,6 +408,8 @@ Starting a task?
 │
 ├── Node.js/Express/Fastify API → backend-patterns active
 │
+├── Payment / wallet / settlement / webhook → payment-service-patterns active
+│
 ├── Next.js frontend → nextjs-turbopack + frontend-design-direction + frontend-patterns
 │
 ├── Animation/motion work → motion-patterns
@@ -416,6 +423,8 @@ Starting a task?
 ├── Agent pipeline slow/broken → context-budget + agent-architecture-audit
 │
 ├── Pre-deploy security → security-bounty-hunter
+│
+├── JS/TS review → typescript-reviewer agent (+ react-reviewer on .tsx/.jsx)
 │
 └── After implementation → verification-loop → code-reviewer agent
 ```
@@ -468,7 +477,12 @@ bash scripts/check.sh
 bash scripts/install.sh --target all --backup
 
 # Verify
-ls ~/.claude/skills | wc -l    # should be 20+
-ls ~/.claude/agents | wc -l    # should be 9
-ls ~/.claude/commands           # plan, refactor-clean
+ls ~/.claude/agents | wc -l                    # should be 11
+find ~/.claude/skills -name SKILL.md | wc -l   # should be 23 (+ any built-in skills)
+ls ~/.claude/rules/common                      # 9 rule files imported by CLAUDE.md
+ls ~/.claude/commands                          # plan, refactor-clean
 ```
+
+> If `~/.claude/rules/common`, skills, or commands look empty after an install, you are
+> on an old `install.sh` with a variable-scoping bug that silently skipped every
+> `copy_dir_contents` call after `agents`. Pull the latest and re-run with `--prune`.
