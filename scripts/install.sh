@@ -4,6 +4,8 @@ set -euo pipefail
 TARGET="all"
 MODE="skip"
 DRY_RUN="false"
+PRUNE="false"
+RUN_TS="$(date +%Y%m%d%H%M%S)"
 
 usage() {
   cat <<USAGE
@@ -14,6 +16,7 @@ Options:
   --skip                      Skip existing files. Default
   --backup                    Backup existing files before overwriting
   --force                     Overwrite existing files without backup
+  --prune                     Remove live agents/rules/commands not in the repo (skills left intact)
   --dry-run                   Print actions without changing files
   -h, --help                  Show help
 
@@ -40,6 +43,10 @@ while [ "$#" -gt 0 ]; do
       ;;
     --force)
       MODE="force"
+      shift
+      ;;
+    --prune)
+      PRUNE="true"
       shift
       ;;
     --dry-run)
@@ -91,8 +98,10 @@ copy_file() {
         return 0
         ;;
       backup)
-        local backup="${target}.backup.$(date +%Y%m%d%H%M%S)"
+        local rel="${target#"$HOME"/}"
+        local backup="$HOME/.claude/.backups/$RUN_TS/$rel"
         echo "Backup: $target -> $backup"
+        run mkdir -p "$(dirname "$backup")"
         run mv "$target" "$backup"
         ;;
       force)
@@ -109,17 +118,36 @@ copy_file() {
 copy_dir_contents() {
   local source_dir="$1"
   local target_dir="$2"
+  local src_file relative target
 
   if [ ! -d "$source_dir" ]; then
     echo "Skip missing directory: $source_dir"
     return 0
   fi
 
-  while IFS= read -r -d '' source; do
-    local relative="${source#$source_dir/}"
-    local target="$target_dir/$relative"
-    copy_file "$source" "$target"
+  while IFS= read -r -d '' src_file; do
+    relative="${src_file#"$source_dir"/}"
+    target="$target_dir/$relative"
+    copy_file "$src_file" "$target"
   done < <(find "$source_dir" -type f -print0)
+}
+
+# Remove files in target_dir that have no counterpart in source_dir.
+# Opt-in via --prune. Used only for repo-owned dirs (agents, rules, commands).
+prune_orphans() {
+  local source_dir="$1"
+  local target_dir="$2"
+  local tgt_file relative
+
+  [ -d "$target_dir" ] || return 0
+
+  while IFS= read -r -d '' tgt_file; do
+    relative="${tgt_file#"$target_dir"/}"
+    if [ ! -f "$source_dir/$relative" ]; then
+      echo "Prune orphan: $tgt_file"
+      run rm "$tgt_file"
+    fi
+  done < <(find "$target_dir" -type f -print0)
 }
 
 install_claude() {
@@ -139,6 +167,13 @@ install_claude() {
   copy_dir_contents "$source/skills" "$target/skills"
   copy_dir_contents "$source/commands" "$target/commands"
 
+  if [ "$PRUNE" = "true" ]; then
+    echo "Pruning orphans (agents/rules/commands; skills left intact)..."
+    prune_orphans "$source/agents" "$target/agents"
+    prune_orphans "$source/rules" "$target/rules"
+    prune_orphans "$source/commands" "$target/commands"
+  fi
+
   echo "Claude install complete."
 }
 
@@ -155,8 +190,8 @@ install_codex() {
 
   copy_file "$source/AGENTS.md" "$target/AGENTS.md"
 
+  local path name
   while IFS= read -r -d '' path; do
-    local name
     name="$(basename "$path")"
 
     if [ "$name" = "AGENTS.md" ]; then
@@ -190,3 +225,4 @@ echo
 echo "Done."
 echo "Mode: $MODE"
 echo "Target: $TARGET"
+echo "Prune: $PRUNE"
