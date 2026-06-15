@@ -1,7 +1,7 @@
 # Global Claude Code Instructions
 
 @~/.claude/rules/common/agents.md
-@~/.claude/rules/common/coding-review.md
+@~/.claude/rules/common/code-review.md
 @~/.claude/rules/common/coding-style.md
 @~/.claude/rules/common/development-workflow.md
 @~/.claude/rules/common/git-workflow.md
