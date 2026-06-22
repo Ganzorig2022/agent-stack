@@ -1,29 +1,9 @@
-# Security Guidelines
+# Security
 
-## Mandatory Security Checks
+## Always
+- No hardcoded secrets — use env vars or a secret manager; validate required secrets at startup.
+- Validate all external input. Parameterized queries (no SQL/NoSQL injection). Sanitize HTML (XSS). Enforce CSRF protection, authz on every sensitive path, and rate limits on endpoints. Verify webhooks.
+- Never let error messages leak secrets, tokens, or internals.
 
-Before ANY commit:
-- [ ] No hardcoded secrets (API keys, passwords, tokens)
-- [ ] All user inputs validated
-- [ ] SQL injection prevention (parameterized queries)
-- [ ] XSS prevention (sanitized HTML)
-- [ ] CSRF protection enabled
-- [ ] Authentication/authorization verified
-- [ ] Rate limiting on all endpoints
-- [ ] Error messages don't leak sensitive data
-
-## Secret Management
-
-- NEVER hardcode secrets in source code
-- ALWAYS use environment variables or a secret manager
-- Validate that required secrets are present at startup
-- Rotate any secrets that may have been exposed
-
-## Security Response Protocol
-
-If security issue found:
-1. STOP immediately
-2. Use **security-reviewer** agent
-3. Fix CRITICAL issues before continuing
-4. Rotate any exposed secrets
-5. Review entire codebase for similar issues
+## If a security issue is found
+Stop, invoke **security-reviewer**, fix CRITICAL before continuing, rotate any exposed secret, then sweep the codebase for the same pattern.

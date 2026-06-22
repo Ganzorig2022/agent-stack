@@ -1,24 +1,9 @@
 # Git Workflow
 
-## Commit Message Format
-```
-<type>: <description>
+Commit format: `<type>: <description>` then an optional body. Types: feat, fix, refactor, docs, test, chore, perf, ci.
 
-<optional body>
-```
+Commit or push only when explicitly asked; branch first if on the default branch.
 
-Types: feat, fix, refactor, docs, test, chore, perf, ci
+PRs: analyze the full commit range (`git diff <base>...HEAD`), not just the latest commit. Write a real summary and a test plan. Push new branches with `-u`.
 
-Note: Attribution disabled globally via ~/.claude/settings.json.
-
-## Pull Request Workflow
-
-When creating PRs:
-1. Analyze full commit history (not just latest commit)
-2. Use `git diff [base-branch]...HEAD` to see all changes
-3. Draft comprehensive PR summary
-4. Include test plan with TODOs
-5. Push with `-u` flag if new branch
-
-> For the full development process (planning, TDD, code review) before git operations,
-> see [development-workflow.md](./development-workflow.md).
+For the full process (plan → TDD → review) before git operations, see development-workflow.md.

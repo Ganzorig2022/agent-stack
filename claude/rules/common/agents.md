@@ -1,49 +1,17 @@
 # Agent Orchestration
 
-## Available Agents
+Reach for a subagent when a task is well-scoped and would otherwise flood the main thread with search results, logs, or files you won't reread. It works in its own context and returns a summary.
 
-Located in `~/.claude/agents/`:
+## When to use which
 
-| Agent | Purpose | When to Use |
-|-------|---------|-------------|
-| planner | Implementation planning | Complex features, refactoring |
-| architect | System design | Architectural decisions |
-| tdd-guide | Test-driven development | New features, bug fixes |
-| code-reviewer | Code review | After writing code |
-| security-reviewer | Security analysis | Before commits |
-| build-error-resolver | Fix build errors | When build fails |
-| e2e-runner | E2E testing | Critical user flows |
-| refactor-cleaner | Dead code cleanup | Code maintenance |
-| doc-updater | Documentation | Updating docs |
+- **planner / architect** — complex features, refactors, migrations, system design, boundaries, tradeoffs.
+- **code-reviewer** — after meaningful code changes (use **typescript-reviewer** / **react-reviewer** for TS/React diffs).
+- **security-reviewer** — auth, authz, user input, APIs, DB queries, secrets, payments, webhooks, uploads, external URLs, dependency bumps.
+- **build-error-resolver** — build, typecheck, bundler, or CI failures.
+- **tdd-guide** — test-first behavior. **refactor-cleaner** — behavior-preserving cleanup. **doc-updater** — docs after API/behavior/config changes. **e2e-runner** — only when explicitly asked for Playwright.
 
-## Immediate Agent Usage
+Prefer explicit invocation when correctness matters. Launch independent agents in parallel, not in sequence.
 
-No user prompt needed:
-1. Complex feature requests - Use **planner** agent
-2. Code just written/modified - Use **code-reviewer** agent
-3. Bug fix or new feature - Use **tdd-guide** agent
-4. Architectural decision - Use **architect** agent
+## Model strategy
 
-## Parallel Task Execution
-
-ALWAYS use parallel Task execution for independent operations:
-
-```markdown
-# GOOD: Parallel execution
-Launch 3 agents in parallel:
-1. Agent 1: Security analysis of auth module
-2. Agent 2: Performance review of cache system
-3. Agent 3: Type checking of utilities
-
-# BAD: Sequential when unnecessary
-First agent 1, then agent 2, then agent 3
-```
-
-## Multi-Perspective Analysis
-
-For complex problems, use split role sub-agents:
-- Factual reviewer
-- Senior engineer
-- Security expert
-- Consistency reviewer
-- Redundancy checker
+Per-agent `model` in frontmatter is authoritative — do **not** set `CLAUDE_CODE_SUBAGENT_MODEL`, it hard-overrides every agent. Current split: architect/planner on opus; reviewers, tdd, build, refactor, e2e on sonnet; doc-updater on haiku.
